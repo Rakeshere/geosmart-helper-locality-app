@@ -1,138 +1,144 @@
-# Deployment Guide — GeoSmart Helper Locality App
+# Deployment Guide
 
-## Vercel Deployment (Recommended)
+## Requirements
 
-### Prerequisites
+Before deploying, ensure you have:
+
 - Node.js 18+
-- Vercel account (free)
-- Supabase project (optional)
-
-### Steps
-
-```bash
-# 1. Install Vercel CLI
-npm i -g vercel
-
-# 2. Login
-vercel login
-
-# 3. Deploy from project root
-cd geosmart-app
-vercel --prod
-```
-
-### Environment Variables (Vercel Dashboard)
-
-Go to: **Project Settings → Environment Variables**
-
-| Variable | Value |
-|----------|-------|
-| `NEXT_PUBLIC_SUPABASE_URL` | `https://xxxx.supabase.co` |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | `eyJ...` |
-
-> Without these, the app works with static data. Transit caching is disabled.
+- Vercel account
+- (Optional) Supabase project
 
 ---
 
-## Local Development
+# Local Development
+
+Install dependencies:
 
 ```bash
 npm install
-cp .env.local.example .env.local  # Fill in Supabase keys
-npm run dev                        # http://localhost:3000
 ```
 
-## Production Build (local test)
+Create environment file:
 
 ```bash
-npm run build   # TypeScript check + production bundle
-npm start       # Serve production build
+cp .env.local.example .env.local
+```
+
+Add your Supabase credentials:
+
+```env
+NEXT_PUBLIC_SUPABASE_URL=
+
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+```
+
+Start the development server:
+
+```bash
+npm run dev
+```
+
+Visit:
+
+```
+http://localhost:3000
 ```
 
 ---
 
-## vercel.json (optional tuning)
+# Production Build
 
-```json
-{
-  "functions": {
-    "app/api/transit/route.ts": {
-      "maxDuration": 30
-    }
-  },
-  "headers": [
-    {
-      "source": "/api/(.*)",
-      "headers": [
-        { "key": "X-Content-Type-Options", "value": "nosniff" },
-        { "key": "X-Frame-Options", "value": "DENY" }
-      ]
-    }
-  ]
-}
-```
+Verify the production build locally:
 
-> `maxDuration: 30` extends the serverless function timeout for Overpass API (default 10s on Hobby).
-
----
-
-## Self-hosted (Docker)
-
-```dockerfile
-FROM node:20-alpine AS builder
-WORKDIR /app
-COPY package*.json ./
-RUN npm ci
-COPY . .
-RUN npm run build
-
-FROM node:20-alpine AS runner
-WORKDIR /app
-COPY --from=builder /app/.next/standalone ./
-COPY --from=builder /app/.next/static ./.next/static
-COPY --from=builder /app/public ./public
-
-EXPOSE 3000
-ENV PORT 3000
-CMD ["node", "server.js"]
-```
-
-Add to `next.config.js`:
-```javascript
-const nextConfig = {
-  output: 'standalone',  // Add this for Docker
-  // ...
-};
+```bash
+npm run build
+npm start
 ```
 
 ---
 
-## CI/CD with GitHub Actions
+# Deploy to Vercel
 
-```yaml
-# .github/workflows/deploy.yml
-name: Deploy to Vercel
+Install the Vercel CLI:
 
-on:
-  push:
-    branches: [main]
-
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: npm
-      - run: npm ci
-      - run: npm run type-check
-      - run: npm run build
-      - uses: amondnet/vercel-action@v25
-        with:
-          vercel-token: ${{ secrets.VERCEL_TOKEN }}
-          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-          vercel-args: '--prod'
+```bash
+npm install -g vercel
 ```
+
+Login:
+
+```bash
+vercel login
+```
+
+Deploy:
+
+```bash
+vercel --prod
+```
+
+The application is fully compatible with **Vercel** and requires no additional configuration.
+
+---
+
+# Environment Variables
+
+Configure the following variables in the Vercel Dashboard.
+
+| Variable | Description |
+|----------|-------------|
+| `NEXT_PUBLIC_SUPABASE_URL` | Supabase Project URL |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase Public API Key |
+
+> If these variables are not provided, the application automatically falls back to local seed data. Transit caching will be disabled, but all core features continue to work.
+
+---
+
+# Deployment Flow
+
+```
+Push Code
+     │
+     ▼
+GitHub
+     │
+     ▼
+Vercel Build
+     │
+     ▼
+Next.js Application
+     │
+     ▼
+Live Deployment
+```
+
+---
+
+# Deployment Features
+
+- Zero-configuration Vercel deployment
+- Automatic production builds
+- Environment variable support
+- Supabase integration
+- Static data fallback
+- Optimized Next.js production build
+
+---
+
+# Future Improvements
+
+The project can easily be extended with:
+
+- GitHub Actions CI/CD
+- Docker deployment
+- Custom domain
+- Monitoring & Analytics
+- Automatic cache invalidation
+
+---
+
+# Summary
+
+GeoSmart is deployment-ready with minimal setup.
+
+Simply configure the environment variables, deploy to Vercel, and the application is ready for production.
