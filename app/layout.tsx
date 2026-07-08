@@ -13,16 +13,20 @@ export const metadata: Metadata = {
     'transit planning',
     'GeoSmart',
   ],
-  robots: 'noindex, nofollow', // Internal tool — not for search engines
+  icons: {
+    icon: [
+      { url: '/favicon.png', type: 'image/png' },
+    ],
+    apple: '/favicon.png',
+    shortcut: '/favicon.png',
+  },
+  robots: 'noindex, nofollow', // Internal tool
 };
 
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
-  themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#ffffff' },
-    { media: '(prefers-color-scheme: dark)', color: '#0f172a' },
-  ],
+  themeColor: '#ffffff', // Always light chrome
 };
 
 export default function RootLayout({
@@ -33,6 +37,11 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        {/* Favicon — EzyHelpers logo */}
+        <link rel="icon" href="/favicon.png" type="image/png" />
+        <link rel="apple-touch-icon" href="/favicon.png" />
+        <link rel="shortcut icon" href="/favicon.png" />
+
         {/* Preconnect for Google Fonts */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link
@@ -40,24 +49,30 @@ export default function RootLayout({
           href="https://fonts.gstatic.com"
           crossOrigin="anonymous"
         />
-        {/* Leaflet CSS CDN — ensures proper icon display */}
+
+        {/* Leaflet CSS */}
         <link
           rel="stylesheet"
           href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
           integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
           crossOrigin=""
         />
-        {/* Inline script to prevent flash of wrong theme */}
+
+        {/*
+          Anti-FOUC: runs before first paint.
+          DEFAULT = LIGHT. Only switch to dark if user explicitly saved 'dark'.
+          System/OS preference is intentionally ignored.
+        */}
         <script
           dangerouslySetInnerHTML={{
             __html: `
               try {
-                const stored = localStorage.getItem('geosmart_theme');
-                const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-                if (stored === 'dark' || (!stored && prefersDark)) {
+                var t = localStorage.getItem('geosmart_theme');
+                if (t === 'dark') {
                   document.documentElement.classList.add('dark');
                 }
-              } catch (e) {}
+                // else: stay light (no class = light mode in Tailwind)
+              } catch(e) {}
             `,
           }}
         />

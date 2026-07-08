@@ -4,6 +4,7 @@
 // Sticky Header — GeoSmart Helper Locality App
 // ============================================================
 
+import Image from 'next/image';
 import { RotateCcw } from 'lucide-react';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { SearchBar } from '@/components/header/SearchBar';
@@ -57,19 +58,16 @@ export function Header({
       {/* Main header row */}
       <div className="flex items-center gap-3 h-[60px] px-4">
 
-        {/* ── Logo + Brand ─────────────────────────────────── */}
+        {/* ── EzyHelpers Logo ───────────────────────────────── */}
         <div className="flex items-center gap-2.5 shrink-0">
-          <div
-            className="w-7 h-7 rounded-lg bg-gradient-brand flex items-center justify-center shadow-xs"
-            aria-hidden="true"
-          >
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-              <path
-                d="M7 0.5C4.515 0.5 2.5 2.515 2.5 5c0 3.5 4.5 8.5 4.5 8.5S11.5 8.5 11.5 5C11.5 2.515 9.485 0.5 7 0.5zm0 6.25a1.25 1.25 0 110-2.5 1.25 1.25 0 010 2.5z"
-                fill="white"
-              />
-            </svg>
-          </div>
+          <Image
+            src="/ezyhelpers-logo.png"
+            alt="EzyHelpers Logo"
+            width={36}
+            height={36}
+            className="rounded-lg object-contain"
+            priority
+          />
           <div className="hidden sm:block leading-none">
             <p className="text-[13px] font-bold text-gray-900 dark:text-gray-100 tracking-tight">
               GeoSmart

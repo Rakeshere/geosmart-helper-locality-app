@@ -11,11 +11,11 @@ import { STORAGE_KEYS } from '@/utils/constants';
 export function ThemeToggle() {
   const [isDark, setIsDark] = useState(false);
 
-  // Read persisted preference on mount
+  // Read persisted preference on mount — default is LIGHT
   useEffect(() => {
     const stored = localStorage.getItem(STORAGE_KEYS.theme);
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    const dark = stored ? stored === 'dark' : prefersDark;
+    // Only go dark if user explicitly chose dark. Default = light.
+    const dark = stored === 'dark';
     setIsDark(dark);
     document.documentElement.classList.toggle('dark', dark);
   }, []);
