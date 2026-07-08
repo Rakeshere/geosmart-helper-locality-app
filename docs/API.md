@@ -1,4 +1,4 @@
-# API Documentation — GeoSmart Helper Locality App
+# API Documentation GeoSmart Helper Locality App
 
 ## Overview
 
